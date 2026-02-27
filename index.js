@@ -1,12 +1,30 @@
 require("dotenv").config();
 
-const { 
-  Client, 
-  GatewayIntentBits,
-  REST,
-  Routes,
-  SlashCommandBuilder
-} = require("discord.js");
+const { Client, GatewayIntentBits } = require("discord.js");
+
+const client = new Client({
+  intents: [GatewayIntentBits.Guilds],
+});
+
+// ✅ SERVER LOCK (leave unauthorized servers)
+const ALLOWED_GUILD_ID = "PASTE_YOUR_SERVER_ID";
+
+client.on("guildCreate", (guild) => {
+  if (guild.id !== ALLOWED_GUILD_ID) {
+    console.log(`Unauthorized server joined: ${guild.name} — leaving`);
+    guild.leave();
+  }
+});
+
+
+// your other events
+client.once("ready", () => {
+  console.log(`Logged in as ${client.user.tag}`);
+});
+
+
+// login MUST stay last
+client.login(process.env.DISCORD_TOKEN);
 
 const noblox = require("noblox.js");
 
@@ -113,3 +131,4 @@ http.createServer((req, res) => {
 }).listen(PORT, () => {
   console.log(`Web server running on port ${PORT}`);
 });
+
